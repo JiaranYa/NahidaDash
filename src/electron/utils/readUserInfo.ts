@@ -9,29 +9,53 @@ fs.mkdir(userInfoPath, { recursive: true }, (err) => {
 })
 
 
-
-export const loadUsers = () => {
-    const userInfo: Map<string, any> = new Map()
-    const files = fs.readdirSync(userInfoPath);
-
-    files.forEach(file => {
-        const filePath = path.resolve(userInfoPath, file)
-        const data = fs.readFileSync(filePath, 'utf8')
-        userInfo.set("213192241", JSON.parse(data));
+export const loadUser = (uid: string | number) => {
+    return new Promise((resolve, reject) => {
+        uid = uid.toString()
+        const filePath = path.resolve(userInfoPath, uid + '.json')
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                return reject()
+            }
+            return resolve(JSON.parse(data))
+        })
     })
-
-    return userInfo;
-
 }
 
-export const userInfo = loadUsers()
+export const saveUser = (uid: string | number, userInfo: any) => {
+    const filePath = path.resolve(userInfoPath, uid + '.json')
+    console.log(typeof userInfo);
 
-export const saveUser = (userInfo: Map<string, any>) => {
-    userInfo.forEach((value, key) => {
-        const filePath = path.resolve(userInfoPath, key + '.json')
-        fs.writeFileSync(filePath, JSON.stringify(value), 'utf8')
-    })
-
+    fs.writeFile(filePath, userInfo, 'utf8', () => { })
 }
 
+
+const userListFilePath = path.resolve(userInfoPath, 'userList.json')
+export const loadUserList = () => {
+    if (fs.existsSync(userListFilePath)) {
+        const data = fs.readFileSync(userListFilePath, 'utf8')
+        return JSON.parse(data)
+    } else {
+        return [' ', []]
+    }
+}
+
+export const saveUserList = (data: string) => {
+    fs.writeFile(userListFilePath, data, 'utf8', () => { })
+}
+
+
+export const getRawData = (uid: string | number): Promise<any> => {
+    return new Promise((resolve, reject) => {
+        const rawInfoPath = path.resolve(cachePath, 'raw', uid.toString() + '.json')
+
+        fs.readFile(rawInfoPath, 'utf8', (err, data) => {
+            if (err) {
+                reject(err)
+                return
+            }
+            resolve(JSON.parse(data))
+        })
+    })
+}
 
