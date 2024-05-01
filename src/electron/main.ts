@@ -1,12 +1,16 @@
 import { app, BrowserWindow, ipcMain } from "electron"
-import { enka } from "./enkaAPI/enka"
+import { enka, fetchAssests } from "./enkaAPI/enka"
 import axios from "axios"
-// import path from "path"
 import * as infoReader from "./utils/readUserInfo"
-
-// global.__dirname = path.resolve()
+import paths from "./utils/path"
+import fs from "fs"
 
 axios.create({})
+Object.values(paths).forEach(directory => {
+	if (!fs.existsSync(directory)) {
+		fs.mkdirSync(directory, { recursive: true })
+	}
+})
 
 app.whenReady().then(() => {
 	const win = new BrowserWindow({
@@ -63,16 +67,16 @@ ipcMain.on("init", async event => {
 })
 
 // 获取用户信息
-ipcMain.on("load", (event, uid) => {
-	infoReader
-		.loadUser(uid)
-		.then(data => {
-			event.reply("load-reply", data)
-		})
-		.catch(() => {
-			event.reply("load-reply", null)
-		})
-})
+// ipcMain.on("load", (event, uid) => {
+// 	infoReader
+// 		.loadUser(uid)
+// 		.then(data => {
+// 			event.reply("load-reply", data)
+// 		})
+// 		.catch(() => {
+// 			event.reply("load-reply", null)
+// 		})
+// })
 
 // 从Enka抓取指定的角色信息
 ipcMain.on("update", (event, uid) => {
@@ -96,4 +100,9 @@ ipcMain.on("update", (event, uid) => {
 		.catch(error => {
 			console.error(error)
 		})
+})
+
+ipcMain.on("update-cache", async _event => {
+	// enka.cachedAssetsManager.fetchAllContents()
+	fetchAssests()
 })

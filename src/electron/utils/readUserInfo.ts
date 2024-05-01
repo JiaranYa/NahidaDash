@@ -1,16 +1,11 @@
 import fs from "fs"
-import { userInfoPath, rawInfoPath } from "./path"
+import paths from "./path"
 import path from "path"
-global.__dirname = path.resolve()
-
-fs.mkdir(userInfoPath, { recursive: true }, err => {
-	if (err) throw err
-})
 
 export const loadUser = (uid: string | number) => {
 	return new Promise((resolve, reject) => {
 		uid = uid.toString()
-		const filePath = path.resolve(userInfoPath, uid + ".json")
+		const filePath = path.resolve(paths.userInfo, uid + ".json")
 		fs.readFile(filePath, "utf8", (err, data) => {
 			if (err) {
 				return reject()
@@ -21,12 +16,12 @@ export const loadUser = (uid: string | number) => {
 }
 
 export const saveUser = (uid: string | number, userInfo: any) => {
-	const filePath = path.resolve(userInfoPath, uid + ".json")
+	const filePath = path.resolve(paths.userInfo, uid + ".json")
 
 	fs.writeFile(filePath, JSON.stringify(userInfo), "utf8", () => {})
 }
 
-const userListFilePath = path.resolve(userInfoPath, "userList.json")
+const userListFilePath = path.resolve(paths.userInfo, "userList.json")
 export const loadUserList = (): [number | null, number[]] => {
 	if (fs.existsSync(userListFilePath)) {
 		const data = fs.readFileSync(userListFilePath, "utf8")
@@ -43,13 +38,13 @@ export const saveUserList = (data: string) => {
 export const saveRawData = (data: object, uid: string | number) => {
 	uid = uid.toString()
 
-	fs.writeFile(path.resolve(rawInfoPath, uid + ".json"), JSON.stringify(data), "utf8", () => {})
+	fs.writeFile(path.resolve(paths.rawInfo, uid + ".json"), JSON.stringify(data), "utf8", () => {})
 }
 
 // 仅用于测试
 export const getRawData = (uid: string | number): Promise<any> => {
 	return new Promise((resolve, reject) => {
-		const rawFilePath = path.resolve(rawInfoPath, uid.toString() + ".json")
+		const rawFilePath = path.resolve(paths.rawInfo, uid.toString() + ".json")
 
 		fs.readFile(rawFilePath, "utf8", (err, data) => {
 			if (err) {

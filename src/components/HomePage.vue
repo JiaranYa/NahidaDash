@@ -37,6 +37,13 @@ const initFromEnka = () => {
 const userPanel = computed(() => {
 	return new GIUser(userStore.activeUser)
 })
+
+const updateCache = () => {
+	ipcRenderer.send("update-cache")
+}
+const test = () => {
+	console.log(genshinAPI.getAllArtifacts())
+}
 </script>
 
 <template>
@@ -48,9 +55,12 @@ const userPanel = computed(() => {
 		<div class="profile item">{{ userPanel.nickname }}</div>
 		<div class="col item">
 			<button type="button" @click="updateFromEnka">update</button>
+			<button type="button" @click="updateCache">cache</button>
 		</div>
 		<div class="row item">Three</div>
-		<div class="panel item">Four</div>
+		<div class="panel item">
+			<button type="button" @click="test">test</button>
+		</div>
 	</div>
 </template>
 
