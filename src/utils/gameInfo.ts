@@ -1,33 +1,21 @@
 import { cachePath } from "@/electron/utils/path"
-const { EnkaClient } =
+const { EnkaClient, DetailedGenshinUser, ProfilePicture } =
 	require("enka-network-api") as typeof import("enka-network-api")
-// import { EnkaClient } from "enka-network-api"
-class GenshinAPI {
-	private _client = new EnkaClient({
-		cacheDirectory: cachePath,
-		defaultLanguage: "chs"
-	})
 
-	get characterDict() {
-		return this._client.getAllCharacters()
-	}
-	get weaponDict() {
-		return this._client.getAllWeapons()
-	}
-	get relicsDict() {
-		return this._client.getAllArtifacts()
-	}
-	get relicsSetDict() {
-		return this._client.getAllArtifactSets()
+class GenshinAPI extends EnkaClient {
+	constructor(options: any) {
+		super(options)
 	}
 
-	getCharacter(id: number | string) {
-		return this._client.getCharacterById(id)
+	getInfo(data: any) {
+		return new DetailedGenshinUser(data, this)
 	}
-	getWeapon(id: number | string) {
-		return this._client.getWeaponById(id)
+
+	getIcon(id: number) {
+		return ProfilePicture.getById(id, this)
 	}
 }
 
-const genshinAPI = new GenshinAPI()
+const genshinAPI = new GenshinAPI({ cacheDirectory: cachePath, defaultLanguage: "chs" })
+
 export default genshinAPI

@@ -1,25 +1,36 @@
 {
-  "name": "nahidadash",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "main": "dist-electron/main.js",
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "enka-network-api": "^4.2.0",
-    "pinia": "^2.1.7",
-    "vite-plugin-electron": "^0.28.4",
-    "vue": "^3.4.21"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.4",
-    "electron": "^29.2.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.2.0",
-    "vue-tsc": "^2.0.6"
-  }
+	"name": "nahidadash",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"main": "dist-electron/main.js",
+	"scripts": {
+		"dev": "vite",
+		"build": "vue-tsc && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"enka-network-api": "^4.2.0",
+		"pinia": "^2.1.7",
+		"vite-plugin-electron": "^0.28.4",
+		"vue": "^3.4.21"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^5.0.4",
+		"electron": "^29.2.0",
+		"typescript": "^5.2.2",
+		"vite": "^5.2.0",
+		"vue-tsc": "^2.0.6"
+	},
+	"prettier": {
+		"printWidth": 100,
+		"tabWidth": 2,
+		"useTabs": true,
+		"semi": false,
+		"singleQuote": false,
+		"bracketSpacing": true,
+		"endOfLine": "auto",
+		"trailingComma": "es5",
+		"arrowParens": "avoid"
+	}
 }

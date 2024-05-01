@@ -1,6 +1,19 @@
 # NahidaDash
 纳西妲仪表盘
 
+# 功能计划
+
+<font color=#1B813E>绿色</font>代表已完成，<font color=#FF8C00>橙色</font>代表开发中，<font color=#91989F>灰色</font>代表未开始。
+
+- <font color=#FF8C00>角色面板</font>
+  - <font color=#FF8C00>角色信息匹配</font>
+  - <font color=#91989F>资源下载</font>
+  - <font color=#91989F>图鉴</font>
+- <font color=#91989F>单人相关</font>
+  - <font color=#91989F>单人伤害计算</font>
+  - <font color=#91989F>武器，命座，圣遗物可视化</font>
+- <font color=#91989F>队伍相关</font>
+
 
 # Vue 3 + TypeScript + Vite
 

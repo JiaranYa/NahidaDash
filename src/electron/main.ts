@@ -1,16 +1,10 @@
 import { app, BrowserWindow, ipcMain } from "electron"
-import enka from "./enkaAPI/enka"
+import { enka } from "./enkaAPI/enka"
 import axios from "axios"
-import path from "path"
-import {
-	loadUserList,
-	saveUserList,
-	loadUser,
-	saveUser,
-	getRawData
-} from "./utils/readUserInfo"
+// import path from "path"
+import * as infoReader from "./utils/readUserInfo"
 
-global.__dirname = path.resolve()
+// global.__dirname = path.resolve()
 
 axios.create({})
 
@@ -21,8 +15,8 @@ app.whenReady().then(() => {
 		title: "Nahida Dash",
 		webPreferences: {
 			nodeIntegration: true,
-			contextIsolation: false
-		}
+			contextIsolation: false,
+		},
 	})
 	// win.setMinimumSize(1080, 720)
 
@@ -33,21 +27,46 @@ app.whenReady().then(() => {
 		// Load your file
 		win.loadFile("dist/index.html")
 	}
+
+	win.on("close", event => {
+		win.webContents.send("fetch-save-data")
+		event.preventDefault()
+		ipcMain.on("save", (_event, userList, users) => {
+			infoReader.saveUserList(userList)
+			if (users !== null) {
+				Object.entries(JSON.parse(users)).forEach(([uid, info]) => {
+					infoReader.saveUser(uid, info)
+				})
+			}
+			win.destroy()
+		})
+	})
 })
 
 app.on("window-all-closed", () => {
 	app.quit()
 })
 
-ipcMain.on("init", (event) => {
-	const [uid, userList] = loadUserList()
-	event.reply("init-reply", uid, userList)
+ipcMain.on("init", async event => {
+	const [uid, userList] = infoReader.loadUserList()
+	const infolist: { [key: number]: any } = {}
+
+	await Promise.all(
+		userList.map(async userid => {
+			return infoReader.loadUser(userid).then(data => {
+				infolist[userid] = data
+			})
+		})
+	)
+
+	event.reply("init-reply", uid, userList, infolist)
 })
 
 // 获取用户信息
 ipcMain.on("load", (event, uid) => {
-	loadUser(uid)
-		.then((data) => {
+	infoReader
+		.loadUser(uid)
+		.then(data => {
 			event.reply("load-reply", data)
 		})
 		.catch(() => {
@@ -58,26 +77,23 @@ ipcMain.on("load", (event, uid) => {
 // 从Enka抓取指定的角色信息
 ipcMain.on("update", (event, uid) => {
 	// 实际从Enka获取角色信息
-	// enka.fetchUser(uid).then(user => {
-	//     event.reply('update-reply', user)
-	// })
+	// enka
+	// 	.fetchUser(uid)
+	// 	.then(user => {
+	// 		infoReader.saveRawData(user._data, uid)
+	// 		event.reply("update-reply", user._data)
+	// 	})
+	// 	.catch(error => {
+	// 		console.log(error)
+	// 	})
 
 	// 用于测试：从本地文件读取角色信息
-	getRawData(uid)
-		.then((data) => {
+	infoReader
+		.getRawData(uid)
+		.then(data => {
 			event.reply("update-reply", data)
 		})
-		.catch((error) => {
+		.catch(error => {
 			console.error(error)
 		})
-})
-
-// 保存用户列表信息
-ipcMain.on("info-save", (_event, data: string) => {
-	saveUserList(data)
-})
-
-// 保存用户
-ipcMain.on("save", (_event, uid, info) => {
-	saveUser(uid, info)
 })

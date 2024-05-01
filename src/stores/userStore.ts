@@ -1,23 +1,25 @@
-import { GenshinUser } from "@/utils/genshinUser"
+import { UserLoader } from "@/utils/loader"
 import { defineStore } from "pinia"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 
 export const useUserStore = defineStore("user", () => {
-	const defaultUid = ref()
+	const activeUid = ref<number | null>(null)
 
-	const userList = ref<string[]>([])
+	const userList = ref<number[]>([])
 
-	const addUser = (user: string) => {
+	const userInfo = ref<{ [key: number]: UserLoader }>({})
+
+	const activeUser = computed(() => {
+		return userInfo.value[activeUid.value || 0]
+	})
+
+	// const activeCharcID = computed(() => {
+	// 	return activeUser.value?.avatarInfoList[0]?.aid || null
+	// })
+	const addUser = (user: number) => {
 		if (!userList.value.includes(user)) {
 			userList.value.push(user)
 		}
 	}
-
-	const activeUser = ref<GenshinUser | null>(null)
-
-	const activeCharcID = ref<number | null>(
-		activeUser.value?.avatarInfoList[0].aid || null
-	)
-
-	return { defaultUid, userList, addUser, activeUser }
+	return { activeUid, userList, userInfo, activeUser, addUser }
 })

@@ -1,38 +1,51 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue"
-import genshinAPI from "./utils/gameInfo"
-import Character from "./utils/character"
-import { GenshinUser } from "@/utils/genshinUser"
+// import HelloWorld from "./components/HelloWorld.vue"
+// import genshinAPI from "./utils/gameInfo"
+import { UserLoader } from "@/utils/loader"
 const { ipcRenderer } = require("electron")
-import { onMounted} from "vue"
+import { onMounted } from "vue"
 import { useUserStore } from "@/stores/userStore"
+import HomePage from "./components/HomePage.vue"
 
 const userStore = useUserStore()
 
 onMounted(() => {
 	ipcRenderer.send("init")
 
-	ipcRenderer.on("init-reply", (_event, uid, userList) => {
-		userStore.defaultUid = uid
+	ipcRenderer.on("init-reply", (_event, uid, userList, userInfo) => {
+		userStore.activeUid = uid
 		userStore.userList = userList
+		userStore.userInfo = Object.entries(userInfo).reduce(
+			(acc: { [key: number]: UserLoader }, [key, value]) => {
+				acc[parseInt(key)] = new UserLoader(value)
+				return acc
+			},
+			{}
+		)
 	})
 })
-// console.log(genshinAPI.getCharacter(10000002))
-// console.log(genshinAPI.weaponDict)
-// console.log(genshinAPI.relicsDict)
-// console.log(genshinAPI.relicsSetDict)
+
+ipcRenderer.on("fetch-save-data", _event => {
+	ipcRenderer.send(
+		"save",
+		JSON.stringify([userStore.activeUid, userStore.userList]),
+		JSON.stringify(userStore.userInfo)
+	)
+})
+
 </script>
 
 <template>
-	<div>
+	<!-- <div>
 		<a href="https://vitejs.dev" target="_blank">
 			<img src="/vite.svg" class="logo" alt="Vite logo" />
 		</a>
 		<a href="https://vuejs.org/" target="_blank">
 			<img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
 		</a>
-	</div>
-	<HelloWorld msg="Vite + Vue" />
+	</div> -->
+	<!-- <HelloWorld msg="Vite + Vue" /> -->
+	<HomePage />
 </template>
 
 <style scoped>
