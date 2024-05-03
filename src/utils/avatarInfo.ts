@@ -13,6 +13,8 @@ export class GIUser {
 	profileCard
 	/**头像*/
 	profileIcon
+	/** 角色列表*/
+	characters
 
 	constructor(data: UserLoader) {
 		this.nickname = data.nickname
@@ -21,7 +23,35 @@ export class GIUser {
 		this.signature = data.signature
 		this.profileCard = genshinAPI.getNameCardById(data.nameCardId)
 		this.profileIcon = genshinAPI.getIcon(data.profileIconId)
+		this.characters = data.avatarInfoList.map(item => {
+			return genshinAPI.getCharacter(item)
+		})
 	}
+
+	fromJson(json: Loader) {
+		this.uid = json.uid
+		this.nickname = json.nickname
+		this.level = json.level
+		this.signature = json.signature
+	}
+
+	parseJson() {
+		const JsonObj: Object = {
+			uid: this.uid,
+			nickname: this.nickname,
+			level: this.level,
+			signature: this.signature,
+		}
+
+		return JsonObj
+	}
+}
+
+interface Loader {
+	uid: number
+	nickname: string
+	level: number
+	signature: string
 }
 
 export class AvatarInfo {

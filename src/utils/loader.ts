@@ -15,7 +15,7 @@ export class UserLoader {
 	/**头像 ID*/
 	profileIconId: number
 	/**自机角色表*/
-	avatarInfoList: CharLoader[]
+	avatarInfoList: any[]
 
 	constructor(data: any) {
 		this.uid = data?.uid
@@ -24,7 +24,8 @@ export class UserLoader {
 		this.signature = data?.signature
 		this.nameCardId = data?.nameCardId
 		this.profileIconId = data?.profileIconId
-		this.avatarInfoList = (data.avatarInfoList ?? []).map((item: any) => new CharLoader(item))
+		// this.avatarInfoList = (data.avatarInfoList ?? []).map((item: any) => new CharLoader(item))
+		this.avatarInfoList = data?.avatarInfoList || []
 	}
 
 	update(newData: DetailedGenshinUser) {
@@ -37,23 +38,22 @@ export class UserLoader {
 		this.nameCardId = newData.profileCard.id
 		this.profileIconId = newData.profilePicture!._data.id as number
 
-		// const avatarInfoList: AvatarInfo[] = []
-		// const newAvatarId: number[] = []
-		// newData.characters.forEach((item: any) => {
-		// 	avatarInfoList.push(AvatarInfo.fromEnka(item))
-		// 	newAvatarId.push(item.avatarId)
-		// })
-		// this.avatarInfoList.forEach((item, _index) => {
-		// 	if (newAvatarId.includes(item.aid)) {
-		// 		avatarInfoList.push(item)
-		// 	}
-		// })
+		const newAvatarId: number[] = []
+		const newChars = newData.characters.map(item => {
+			newAvatarId.push(item.characterData.id)
+			return item._data
+		})
 
-		// this.avatarInfoList = avatarInfoList
+		this.avatarInfoList.forEach((item, _index) => {
+			if (newChars.includes(item.avatarId)) {
+				newChars.push(item)
+			}
+		})
+		this.avatarInfoList = newChars
 		return this
 	}
 }
 
-export class CharLoader {
-	constructor(data: any) {}
-}
+// export class CharLoader {
+// 	constructor(data: any) {}
+// }

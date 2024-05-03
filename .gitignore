@@ -26,3 +26,5 @@ dist-electron
 
 # Project specific files
 cache
+
+public
